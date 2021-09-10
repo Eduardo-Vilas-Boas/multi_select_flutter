@@ -100,13 +100,14 @@ class MultiSelectBottomSheetField<V> extends FormField<List<V>> {
   /// Set the color of the check in the checkbox
   final Color? checkColor;
 
+  /// Function to create option if there are no options available.
+  final void Function(String)? createOption;
+
   final AutovalidateMode autovalidateMode;
   final FormFieldValidator<List<V>>? validator;
   final FormFieldSetter<List<V>>? onSaved;
   final GlobalKey<FormFieldState>? key;
   FormFieldState<List<V>>? state;
-
-  final void Function()? createOption;
 
   MultiSelectBottomSheetField({
     required this.items,
@@ -197,7 +198,7 @@ class _MultiSelectBottomSheetFieldView<V> extends StatefulWidget {
   final Icon? buttonIcon;
   final List<MultiSelectItem<V>> items;
   final List<V>? initialValue;
-  final void Function()? createOption;
+  final void Function(String)? createOption;
   final Widget? title;
   final void Function(List<V>)? onSelectionChanged;
   final void Function(List<V>)? onConfirm;
@@ -312,70 +313,59 @@ class __MultiSelectBottomSheetFieldViewState<V>
   }
 
   Widget _buildInheritedChipDisplay() {
-    if (_selectedItems.isNotEmpty || this.widget.createOption == null) {
-      List<MultiSelectItem<V>?> chipDisplayItems = [];
-      chipDisplayItems = _selectedItems
-          .map((e) =>
-              widget.items.firstWhereOrNull((element) => e == element.value))
-          .toList();
-      chipDisplayItems.removeWhere((element) => element == null);
-      if (widget.chipDisplay != null) {
-        // if user has specified a chipDisplay, use its params
-        if (widget.chipDisplay!.disabled!) {
-          return Container();
-        } else {
-          return MultiSelectChipDisplay<V>(
-            items: chipDisplayItems,
-            colorator: widget.chipDisplay!.colorator ?? widget.colorator,
-            onTap: (item) {
-              List<V>? newValues;
-              if (widget.chipDisplay!.onTap != null) {
-                dynamic result = widget.chipDisplay!.onTap!(item);
-                if (result is List<V>) newValues = result;
-              }
-              if (newValues != null) {
-                _selectedItems = newValues;
-                if (widget.state != null) {
-                  widget.state!.didChange(_selectedItems);
-                }
-              }
-            },
-            decoration: widget.chipDisplay!.decoration,
-            chipColor: widget.chipDisplay!.chipColor ??
-                ((widget.selectedColor != null &&
-                        widget.selectedColor != Colors.transparent)
-                    ? widget.selectedColor!.withOpacity(0.35)
-                    : null),
-            alignment: widget.chipDisplay!.alignment,
-            textStyle: widget.chipDisplay!.textStyle,
-            icon: widget.chipDisplay!.icon,
-            shape: widget.chipDisplay!.shape,
-            scroll: widget.chipDisplay!.scroll,
-            scrollBar: widget.chipDisplay!.scrollBar,
-            height: widget.chipDisplay!.height,
-            chipWidth: widget.chipDisplay!.chipWidth,
-          );
-        }
+    List<MultiSelectItem<V>?> chipDisplayItems = [];
+    chipDisplayItems = _selectedItems
+        .map((e) =>
+            widget.items.firstWhereOrNull((element) => e == element.value))
+        .toList();
+    chipDisplayItems.removeWhere((element) => element == null);
+    if (widget.chipDisplay != null) {
+      // if user has specified a chipDisplay, use its params
+      if (widget.chipDisplay!.disabled!) {
+        return Container();
       } else {
-        // user didn't specify a chipDisplay, build the default
         return MultiSelectChipDisplay<V>(
           items: chipDisplayItems,
-          colorator: widget.colorator,
-          chipColor: (widget.selectedColor != null &&
-                  widget.selectedColor != Colors.transparent)
-              ? widget.selectedColor!.withOpacity(0.35)
-              : null,
+          colorator: widget.chipDisplay!.colorator ?? widget.colorator,
+          onTap: (item) {
+            List<V>? newValues;
+            if (widget.chipDisplay!.onTap != null) {
+              dynamic result = widget.chipDisplay!.onTap!(item);
+              if (result is List<V>) newValues = result;
+            }
+            if (newValues != null) {
+              _selectedItems = newValues;
+              if (widget.state != null) {
+                widget.state!.didChange(_selectedItems);
+              }
+            }
+          },
+          decoration: widget.chipDisplay!.decoration,
+          chipColor: widget.chipDisplay!.chipColor ??
+              ((widget.selectedColor != null &&
+                      widget.selectedColor != Colors.transparent)
+                  ? widget.selectedColor!.withOpacity(0.35)
+                  : null),
+          alignment: widget.chipDisplay!.alignment,
+          textStyle: widget.chipDisplay!.textStyle,
+          icon: widget.chipDisplay!.icon,
+          shape: widget.chipDisplay!.shape,
+          scroll: widget.chipDisplay!.scroll,
+          scrollBar: widget.chipDisplay!.scrollBar,
+          height: widget.chipDisplay!.height,
+          chipWidth: widget.chipDisplay!.chipWidth,
         );
       }
     } else {
-      return Align(
-          alignment: Alignment.center,
-          child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: Colors.blue,
-              ),
-              child: Text("Create new tag"),
-              onPressed: this.widget.createOption));
+      // user didn't specify a chipDisplay, build the default
+      return MultiSelectChipDisplay<V>(
+        items: chipDisplayItems,
+        colorator: widget.colorator,
+        chipColor: (widget.selectedColor != null &&
+                widget.selectedColor != Colors.transparent)
+            ? widget.selectedColor!.withOpacity(0.35)
+            : null,
+      );
     }
   }
 
@@ -391,6 +381,7 @@ class __MultiSelectBottomSheetFieldViewState<V>
         context: context,
         builder: (context) {
           return MultiSelectBottomSheet<V>(
+            createOption: this.widget.createOption,
             checkColor: widget.checkColor,
             selectedItemsTextStyle: widget.selectedItemsTextStyle,
             searchTextStyle: widget.searchTextStyle,

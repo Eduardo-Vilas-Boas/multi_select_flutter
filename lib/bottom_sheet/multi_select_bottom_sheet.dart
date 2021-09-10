@@ -76,31 +76,34 @@ class MultiSelectBottomSheet<V> extends StatefulWidget
   /// Set the color of the check in the checkbox
   final Color? checkColor;
 
-  MultiSelectBottomSheet({
-    required this.items,
-    required this.initialValue,
-    this.title,
-    this.onSelectionChanged,
-    this.onConfirm,
-    this.listType,
-    this.cancelText,
-    this.confirmText,
-    this.searchable,
-    this.selectedColor,
-    this.initialChildSize,
-    this.minChildSize,
-    this.maxChildSize,
-    this.colorator,
-    this.unselectedColor,
-    this.searchIcon,
-    this.closeSearchIcon,
-    this.itemsTextStyle,
-    this.searchTextStyle,
-    this.searchHint,
-    this.searchHintStyle,
-    this.selectedItemsTextStyle,
-    this.checkColor,
-  });
+  /// Function to create option if there are no options available.
+  final void Function(String)? createOption;
+
+  MultiSelectBottomSheet(
+      {required this.items,
+      required this.initialValue,
+      this.title,
+      this.onSelectionChanged,
+      this.onConfirm,
+      this.listType,
+      this.cancelText,
+      this.confirmText,
+      this.searchable,
+      this.selectedColor,
+      this.initialChildSize,
+      this.minChildSize,
+      this.maxChildSize,
+      this.colorator,
+      this.unselectedColor,
+      this.searchIcon,
+      this.closeSearchIcon,
+      this.itemsTextStyle,
+      this.searchTextStyle,
+      this.searchHint,
+      this.searchHintStyle,
+      this.selectedItemsTextStyle,
+      this.checkColor,
+      required this.createOption});
 
   @override
   _MultiSelectBottomSheetState<V> createState() =>
@@ -113,6 +116,8 @@ class _MultiSelectBottomSheetState<V> extends State<MultiSelectBottomSheet<V>> {
   List<MultiSelectItem<V>> _items;
 
   _MultiSelectBottomSheetState(this._items);
+
+  TextEditingController searchTextController = new TextEditingController();
 
   void initState() {
     super.initState();
@@ -238,6 +243,7 @@ class _MultiSelectBottomSheetState<V> extends State<MultiSelectBottomSheet<V>> {
                                             Theme.of(context).primaryColor),
                                   ),
                                 ),
+                                controller: searchTextController,
                                 onChanged: (val) {
                                   setState(() {
                                     _items = widget.updateSearchQuery(
@@ -271,24 +277,37 @@ class _MultiSelectBottomSheetState<V> extends State<MultiSelectBottomSheet<V>> {
                 ),
               ),
               Expanded(
-                child: widget.listType == null ||
-                        widget.listType == MultiSelectListType.LIST
-                    ? ListView.builder(
-                        controller: scrollController,
-                        itemCount: _items.length,
-                        itemBuilder: (context, index) {
-                          return _buildListItem(_items[index]);
-                        },
-                      )
-                    : SingleChildScrollView(
-                        controller: scrollController,
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          child: Wrap(
-                            children: _items.map(_buildChipItem).toList(),
-                          ),
-                        ),
-                      ),
+                child: (this.widget.createOption != null &&
+                        _items.length == 0 &&
+                        searchTextController.text != "")
+                    ? Align(
+                        alignment: Alignment.center,
+                        child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.blue,
+                            ),
+                            child: Text("Create new tag"),
+                            onPressed: () => this
+                                .widget
+                                .createOption!(searchTextController.text)))
+                    : (widget.listType == null ||
+                            widget.listType == MultiSelectListType.LIST
+                        ? ListView.builder(
+                            controller: scrollController,
+                            itemCount: _items.length,
+                            itemBuilder: (context, index) {
+                              return _buildListItem(_items[index]);
+                            },
+                          )
+                        : SingleChildScrollView(
+                            controller: scrollController,
+                            child: Container(
+                              padding: EdgeInsets.all(10),
+                              child: Wrap(
+                                children: _items.map(_buildChipItem).toList(),
+                              ),
+                            ),
+                          )),
               ),
               Container(
                 padding: EdgeInsets.all(2),
