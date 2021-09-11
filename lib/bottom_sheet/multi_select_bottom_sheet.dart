@@ -209,6 +209,11 @@ class _MultiSelectBottomSheetState<V> extends State<MultiSelectBottomSheet<V>> {
     );
   }
 
+  void pressedFunction(String value) {
+    print("pressedFunction");
+    this.widget.createOption!(value);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -287,9 +292,8 @@ class _MultiSelectBottomSheetState<V> extends State<MultiSelectBottomSheet<V>> {
                               primary: Colors.blue,
                             ),
                             child: Text("Create new tag"),
-                            onPressed: () => this
-                                .widget
-                                .createOption!(searchTextController.text)))
+                            onPressed: () =>
+                                pressedFunction(searchTextController.text)))
                     : (widget.listType == null ||
                             widget.listType == MultiSelectListType.LIST
                         ? ListView.builder(
