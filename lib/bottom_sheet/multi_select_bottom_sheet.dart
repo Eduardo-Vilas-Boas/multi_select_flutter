@@ -211,6 +211,8 @@ class _MultiSelectBottomSheetState<V> extends State<MultiSelectBottomSheet<V>> {
 
   void pressedFunction(String value) {
     print("pressedFunction");
+    print("this.widget.createOption: " + this.widget.createOption.toString());
+    print("value: " + value);
     this.widget.createOption!(value);
   }
 
