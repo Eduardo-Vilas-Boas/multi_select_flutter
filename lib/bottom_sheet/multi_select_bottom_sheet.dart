@@ -216,6 +216,8 @@ class _MultiSelectBottomSheetState<V> extends State<MultiSelectBottomSheet<V>> {
 
   @override
   Widget build(BuildContext context) {
+    print("pressedFunction");
+
     return Container(
       padding:
           EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -291,7 +293,7 @@ class _MultiSelectBottomSheetState<V> extends State<MultiSelectBottomSheet<V>> {
                             style: ElevatedButton.styleFrom(
                               primary: Colors.blue,
                             ),
-                            child: Text("Create new tag"),
+                            child: Text("Create new tag 2"),
                             onPressed: () =>
                                 pressedFunction(searchTextController.text)))
                     : (widget.listType == null ||
