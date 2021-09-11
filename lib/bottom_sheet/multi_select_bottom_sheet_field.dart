@@ -101,7 +101,7 @@ class MultiSelectBottomSheetField<V> extends FormField<List<V>> {
   final Color? checkColor;
 
   /// Function to create option if there are no options available.
-  final void Function(String)? createOption;
+  final Future<MultiSelectItem<V>?> Function(String)? createOption;
 
   final AutovalidateMode autovalidateMode;
   final FormFieldValidator<List<V>>? validator;
@@ -198,7 +198,7 @@ class _MultiSelectBottomSheetFieldView<V> extends StatefulWidget {
   final Icon? buttonIcon;
   final List<MultiSelectItem<V>> items;
   final List<V>? initialValue;
-  final void Function(String)? createOption;
+  final Future<MultiSelectItem<V>?> Function(String)? createOption;
   final Widget? title;
   final void Function(List<V>)? onSelectionChanged;
   final void Function(List<V>)? onConfirm;

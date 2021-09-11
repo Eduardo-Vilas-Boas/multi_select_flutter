@@ -77,7 +77,7 @@ class MultiSelectBottomSheet<V> extends StatefulWidget
   final Color? checkColor;
 
   /// Function to create option if there are no options available.
-  final void Function(String)? createOption;
+  final Future<MultiSelectItem<V>?> Function(String)? createOption;
 
   MultiSelectBottomSheet(
       {required this.items,
@@ -209,6 +209,21 @@ class _MultiSelectBottomSheetState<V> extends State<MultiSelectBottomSheet<V>> {
     );
   }
 
+  void createOptionHandler(String value) async {
+    MultiSelectItem<V>? tagCreated =
+        await this.widget.createOption!(searchTextController.text);
+    if (tagCreated != null) {
+      setState(() {
+        _items.add(tagCreated);
+        this.searchTextController.text = "";
+      });
+    } else {
+      setState(() {
+        this.searchTextController.text = "";
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -287,9 +302,8 @@ class _MultiSelectBottomSheetState<V> extends State<MultiSelectBottomSheet<V>> {
                               primary: Colors.blue,
                             ),
                             child: Text("Create new tag"),
-                            onPressed: () => this
-                                .widget
-                                .createOption!(searchTextController.text)))
+                            onPressed: () =>
+                                createOptionHandler(searchTextController.text)))
                     : (widget.listType == null ||
                             widget.listType == MultiSelectListType.LIST
                         ? ListView.builder(
