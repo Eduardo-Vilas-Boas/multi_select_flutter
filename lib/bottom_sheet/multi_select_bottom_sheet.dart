@@ -209,17 +209,8 @@ class _MultiSelectBottomSheetState<V> extends State<MultiSelectBottomSheet<V>> {
     );
   }
 
-  void pressedFunction(String value) {
-    print("pressedFunction");
-    print("this.widget.createOption: " + this.widget.createOption.toString());
-    print("value: " + value);
-    this.widget.createOption!(value);
-  }
-
   @override
   Widget build(BuildContext context) {
-    print("pressedFunction");
-
     return Container(
       padding:
           EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -295,9 +286,10 @@ class _MultiSelectBottomSheetState<V> extends State<MultiSelectBottomSheet<V>> {
                             style: ElevatedButton.styleFrom(
                               primary: Colors.blue,
                             ),
-                            child: Text("Create new tag 2"),
-                            onPressed: () =>
-                                pressedFunction(searchTextController.text)))
+                            child: Text("Create new tag"),
+                            onPressed: () => this
+                                .widget
+                                .createOption!(searchTextController.text)))
                     : (widget.listType == null ||
                             widget.listType == MultiSelectListType.LIST
                         ? ListView.builder(
